@@ -1,0 +1,31 @@
+package org.example.medtracebackend.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Batch {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
+    private String batchNumber;
+
+    @Column(unique = true)
+    private String qrCodeData;
+
+    private LocalDate expiryDate;
+    private int stockQuantity;
+    private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "medicine_id")
+    private Medicine medicine;
+}
