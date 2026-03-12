@@ -10,4 +10,13 @@ public interface MedicineService {
     Batch addBatchToMedicine(Long medicineId, Batch batch);
     List<Medicine> getAllMedicine();
     Batch verifyByQrCode(String qrData);
+
+    Medicine getMedicineById(Long id);
+    Medicine updateMedicine(Long id, Medicine medicineDetails);
+    void deleteMedicine(Long id);
+
+    List<Batch> getAllBatches();
+    void deleteBatch(Long id);
+
+    byte[] generateExpiryReport();
 }
