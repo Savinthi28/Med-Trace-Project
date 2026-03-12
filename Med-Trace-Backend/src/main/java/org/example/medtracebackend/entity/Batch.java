@@ -1,5 +1,6 @@
 package org.example.medtracebackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,5 +28,6 @@ public class Batch {
 
     @ManyToOne
     @JoinColumn(name = "medicine_id")
+    @JsonBackReference
     private Medicine medicine;
 }
