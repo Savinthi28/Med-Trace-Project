@@ -1,21 +1,23 @@
 package org.example.medtracebackend.service;
 
+import org.example.medtracebackend.dto.BatchDTO;
+import org.example.medtracebackend.dto.MedicineDTO;
 import org.example.medtracebackend.entity.Batch;
 import org.example.medtracebackend.entity.Medicine;
-
 import java.util.List;
 
 public interface MedicineService {
-    Medicine saveMedicine(Medicine medicine);
-    Batch addBatchToMedicine(Long medicineId, Batch batch);
-    List<Medicine> getAllMedicine();
-    Batch verifyByQrCode(String qrData);
+    MedicineDTO saveMedicine(Medicine medicine);
+    BatchDTO addBatchToMedicine(Long medicineId, Batch batch);
 
-    Medicine getMedicineById(Long id);
-    Medicine updateMedicine(Long id, Medicine medicineDetails);
+    List<MedicineDTO> getAllMedicine();
+    BatchDTO verifyByQrCode(String qrData);
+
+    MedicineDTO getMedicineById(Long id);
+    MedicineDTO updateMedicine(Long id, Medicine medicineDetails);
     void deleteMedicine(Long id);
 
-    List<Batch> getAllBatches();
+    List<BatchDTO> getAllBatches();
     void deleteBatch(Long id);
 
     byte[] generateExpiryReport();
