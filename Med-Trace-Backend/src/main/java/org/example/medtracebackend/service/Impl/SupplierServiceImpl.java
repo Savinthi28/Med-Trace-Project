@@ -47,15 +47,15 @@ public class SupplierServiceImpl implements SupplierService {
         if (dto == null) {
             throw new NullPointerException("Update details cannot be null");
         }
-        Supplier exisiting = supplierRepo.findById(id)
+        Supplier supplier = supplierRepo.findById(id)
                 .orElseThrow( () -> new ResourceNotFoundException("Supplier not found update: " + id));
-        exisiting.setName(dto.getName());
-        exisiting.setContactPerson(dto.getContactPerson());
-        exisiting.setPhoneNumber(dto.getPhoneNumber());
-        exisiting.setEmail(dto.getEmail());
-        exisiting.setCategory(dto.getCategory());
+        supplier.setName(dto.getName());
+        supplier.setContactPerson(dto.getContactPerson());
+        supplier.setPhoneNumber(dto.getPhoneNumber());
+        supplier.setEmail(dto.getEmail());
+        supplier.setCategory(dto.getCategory());
 
-        return modelMapper.map(supplierRepo.save(exisiting), SupplierDTO.class);
+        return modelMapper.map(supplierRepo.save(supplier), SupplierDTO.class);
     }
 
     @Override
