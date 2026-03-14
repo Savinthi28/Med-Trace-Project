@@ -33,5 +33,19 @@ public class SupplierController {
         SupplierDTO supplier = supplierService.getSupplierById(id);
         return new ResponseEntity<>(new APIResponse<>(200, "Supplier found", supplier), HttpStatus.OK);
     }
-
+    @PutMapping("/{id}")
+    public ResponseEntity<APIResponse<SupplierDTO>> update(@PathVariable Long id, @RequestBody SupplierDTO dto) {
+        SupplierDTO updated = supplierService.updateSupplier(id, dto);
+        return new ResponseEntity<>(new APIResponse<>(200, "Supplier updated successfully", updated), HttpStatus.OK);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<APIResponse<String>> delete(@PathVariable Long id) {
+        supplierService.deleteSupplier(id);
+        return new ResponseEntity<>(new APIResponse<>(200,"Supplier deleted", "ID: " + id), HttpStatus.OK);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<APIResponse<List<SupplierDTO>>> search(@RequestParam String name) {
+        List<SupplierDTO> results = supplierService.searchSuppliers(name);
+        return new ResponseEntity<>(new APIResponse<>(200, "Search results ", results), HttpStatus.OK);
+    }
 }
