@@ -1,0 +1,4 @@
+package org.example.medtracebackend.service;
+
+public interface SupplierService {
+}
