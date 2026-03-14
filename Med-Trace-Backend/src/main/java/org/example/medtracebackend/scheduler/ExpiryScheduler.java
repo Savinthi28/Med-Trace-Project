@@ -26,7 +26,7 @@ public class ExpiryScheduler {
             if (batch.getExpiryDate().isBefore(today) && !batch.getStatus().equals("EXPIRED")) {
                 batch.setStatus("EXPIRED");
                 batchRepo.save(batch);
-                System.out.println("🚨 ALERT: Batch " + batch.getBatchNumber() + " is now EXPIRED!");
+                System.out.println("ALERT: Batch " + batch.getBatchNumber() + " is now EXPIRED!");
             }
         }
     }

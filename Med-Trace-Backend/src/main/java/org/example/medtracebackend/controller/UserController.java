@@ -5,6 +5,8 @@ import org.example.medtracebackend.entity.User;
 import org.example.medtracebackend.service.UserService;
 import org.example.medtracebackend.util.APIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,38 +20,38 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public APIResponse<UserDTO> register(@RequestBody User user) {
+    public ResponseEntity<APIResponse<UserDTO>> register(@RequestBody User user) {
         UserDTO savedUser = userService.registerUser(user);
-        return new APIResponse<>(201, "User registered successfully", savedUser);
+        return new ResponseEntity<>(new APIResponse<>(201, "User registered successfully", savedUser), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public APIResponse<List<UserDTO>> getAll() {
+    public ResponseEntity<APIResponse<List<UserDTO>>> getAll() {
         List<UserDTO> users = userService.getAllUsers();
-        return new APIResponse<>(200, "All users fetched", users);
+        return new ResponseEntity<>(new APIResponse<>(200, "All users fetched", users), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public APIResponse<UserDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<APIResponse<UserDTO>> getById(@PathVariable Long id) {
         UserDTO user = userService.getUserById(id);
-        return new APIResponse<>(200, "User found", user);
+        return new ResponseEntity<>(new APIResponse<>(200, "User found", user), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public APIResponse<UserDTO> update(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<APIResponse<UserDTO>> update(@PathVariable Long id, @RequestBody User user) {
         UserDTO updatedUser = userService.updateUser(id, user);
-        return new APIResponse<>(200, "User updated successfully", updatedUser);
+        return new ResponseEntity<>(new APIResponse<>(200, "User updated successfully", updatedUser), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public APIResponse<String> delete(@PathVariable Long id) {
+    public ResponseEntity<APIResponse<String>> delete(@PathVariable Long id) {
         userService.deleteUser(id);
-        return new APIResponse<>(200, "User deleted successfully", "ID: " + id);
+        return new ResponseEntity<>(new APIResponse<>(200, "User deleted successfully", "ID: " + id), HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public APIResponse<UserDTO> login(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<APIResponse<UserDTO>> login(@RequestParam String username, @RequestParam String password) {
         UserDTO user = userService.login(username, password);
-        return new APIResponse<>(200, "Login successful", user);
+        return new ResponseEntity<>(new APIResponse<>(200, "Login successful", user), HttpStatus.OK);
     }
 }

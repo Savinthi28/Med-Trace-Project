@@ -23,67 +23,58 @@ public class MedicineController {
     @Autowired
     private MedicineService medicineService;
 
-    // 1. Create Medicine
     @PostMapping
-    public APIResponse<MedicineDTO> createMedicine(@RequestBody Medicine medicine){
+    public ResponseEntity<APIResponse<MedicineDTO>> createMedicine(@RequestBody Medicine medicine){
         MedicineDTO saved = medicineService.saveMedicine(medicine);
-        return new APIResponse<>(201, "Medicine created successfully", saved);
+        return new ResponseEntity<>(new APIResponse<>(201, "Medicine created successfully", saved), HttpStatus.CREATED);
     }
 
-    // 2. Add Batch
     @PostMapping("/{id}/batches")
-    public APIResponse<BatchDTO> addBatch(@PathVariable Long id, @RequestBody Batch batch){
+    public ResponseEntity<APIResponse<BatchDTO>> addBatch(@PathVariable Long id, @RequestBody Batch batch){
         BatchDTO savedBatch = medicineService.addBatchToMedicine(id, batch);
-        return new APIResponse<>(201, "Batch added successfully", savedBatch);
+        return new ResponseEntity<>(new APIResponse<>(201, "Batch added successfully", savedBatch), HttpStatus.CREATED);
     }
 
-    // 3. Get All Medicines
     @GetMapping
-    public APIResponse<List<MedicineDTO>> getAll(){
+    public ResponseEntity<APIResponse<List<MedicineDTO>>> getAll(){
         List<MedicineDTO> list = medicineService.getAllMedicine();
-        return new APIResponse<>(200, "All medicines fetched", list);
+        return new ResponseEntity<>(new APIResponse<>(200, "All medicines fetched", list), HttpStatus.OK);
     }
 
-    // 4. Verify QR
     @GetMapping("/verify/{qrData}")
-    public APIResponse<BatchDTO> verify(@PathVariable String qrData){
+    public ResponseEntity<APIResponse<BatchDTO>> verify(@PathVariable String qrData){
         BatchDTO batch = medicineService.verifyByQrCode(qrData);
-        return new APIResponse<>(200, "Verification successful", batch);
+        return new ResponseEntity<>(new APIResponse<>(200, "Verification successful", batch), HttpStatus.OK);
     }
 
-    // 5. Get Medicine By ID
     @GetMapping("/{id}")
-    public APIResponse<MedicineDTO> getMedicineById(@PathVariable Long id) {
+    public ResponseEntity<APIResponse<MedicineDTO>> getMedicineById(@PathVariable Long id) {
         MedicineDTO medicine = medicineService.getMedicineById(id);
-        return new APIResponse<>(200, "Medicine found", medicine);
+        return new ResponseEntity<>(new APIResponse<>(200, "Medicine found", medicine), HttpStatus.OK);
     }
 
-    // 6. Update Medicine
     @PutMapping("/{id}")
-    public APIResponse<MedicineDTO> updateMedicine(@PathVariable Long id, @RequestBody Medicine medicine) {
+    public ResponseEntity<APIResponse<MedicineDTO>> updateMedicine(@PathVariable Long id, @RequestBody Medicine medicine) {
         MedicineDTO updated = medicineService.updateMedicine(id, medicine);
-        return new APIResponse<>(200, "Medicine updated successfully", updated);
+        return new ResponseEntity<>(new APIResponse<>(200, "Medicine updated successfully", updated), HttpStatus.OK);
     }
 
-    // 7. Delete Medicine
     @DeleteMapping("/{id}")
-    public APIResponse<String> deleteMedicine(@PathVariable Long id) {
+    public ResponseEntity<APIResponse<String>> deleteMedicine(@PathVariable Long id) {
         medicineService.deleteMedicine(id);
-        return new APIResponse<>(200, "Medicine deleted", "ID: " + id);
+        return new ResponseEntity<>(new APIResponse<>(200, "Medicine deleted", "ID: " + id), HttpStatus.OK);
     }
 
-    // 8. Get All Batches
     @GetMapping("/batches/all")
-    public APIResponse<List<BatchDTO>> getAllBatches() {
+    public ResponseEntity<APIResponse<List<BatchDTO>>> getAllBatches() {
         List<BatchDTO> batches = medicineService.getAllBatches();
-        return new APIResponse<>(200, "All batches fetched", batches);
+        return new ResponseEntity<>(new APIResponse<>(200, "All batches fetched", batches), HttpStatus.OK);
     }
 
-    // 9. Delete Batch
     @DeleteMapping("/batches/{id}")
-    public APIResponse<String> deleteBatch(@PathVariable Long id) {
+    public ResponseEntity<APIResponse<String>> deleteBatch(@PathVariable Long id) {
         medicineService.deleteBatch(id);
-        return new APIResponse<>(200, "Batch deleted", "ID: " + id);
+        return new ResponseEntity<>(new APIResponse<>(200, "Batch deleted", "ID: " + id), HttpStatus.OK);
     }
 
     @GetMapping("/report/expiry")

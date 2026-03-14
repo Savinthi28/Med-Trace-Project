@@ -33,11 +33,17 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public MedicineDTO saveMedicine(Medicine medicine) {
+        if (medicine == null) {
+            throw new NullPointerException("Medicine object cannot be null");
+        }
         return modelMapper.map(medicineRepo.save(medicine), MedicineDTO.class);
     }
 
     @Override
     public BatchDTO addBatchToMedicine(Long medicineId, Batch batch) {
+        if (batch == null) {
+            throw new NullPointerException("Batch object cannot be null");
+        }
         Medicine medicine = medicineRepo.findById(medicineId)
                 .orElseThrow(() -> new ResourceNotFoundException("Medicine not found"));
         batch.setMedicine(medicine);
@@ -51,6 +57,9 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public BatchDTO verifyByQrCode(String qrData) {
+        if (qrData == null) {
+            throw new NullPointerException("QR Data cannot be null");
+        }
         Batch batch = batchRepo.findByQrCodeData(qrData)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid QR Code!"));
         return modelMapper.map(batch, BatchDTO.class);
@@ -65,6 +74,9 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public MedicineDTO updateMedicine(Long id, Medicine details) {
+        if (details == null) {
+            throw new NullPointerException("Update details cannot be null");
+        }
         Medicine existing = medicineRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Medicine not found: " + id));
         existing.setName(details.getName());
@@ -75,6 +87,12 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public void deleteMedicine(Long id) {
+        if (id == null) {
+            throw new NullPointerException("Id cannot be null");
+        }
+        if(!medicineRepo.existsById(id)){
+            throw new ResourceNotFoundException("Medicine not found for delete");
+        }
         medicineRepo.deleteById(id);
     }
 
@@ -85,6 +103,9 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public void deleteBatch(Long id) {
+        if (id == null) {
+            throw new NullPointerException("Id cannot be null");
+        }
         batchRepo.deleteById(id);
     }
 
