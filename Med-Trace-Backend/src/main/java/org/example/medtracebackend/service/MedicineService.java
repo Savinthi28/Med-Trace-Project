@@ -21,4 +21,7 @@ public interface MedicineService {
     void deleteBatch(Long id);
 
     byte[] generateExpiryReport();
+
+    long getTotalMedicineCount();
+    List<BatchDTO> getExpiredBatchesList();
 }

@@ -135,4 +135,16 @@ public class MedicineServiceImpl implements MedicineService {
         }
         return out.toByteArray();
     }
+
+    @Override
+    public long getTotalMedicineCount() {
+        return medicineRepo.count();
+    }
+
+    @Override
+    public List<BatchDTO> getExpiredBatchesList() {
+        List<Batch> expired = batchRepo.findAll().stream()
+                .filter(batch -> "EXPIRED" .equals(batch.getStatus())).toList();
+        return modelMapper.map(expired, new TypeToken<List<BatchDTO>>() {}.getType());
+    }
 }

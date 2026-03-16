@@ -85,4 +85,12 @@ public class MedicineController {
         headers.setContentDispositionFormData("filename", "expiry-report.pdf");
         return new ResponseEntity<>(pdfContents, headers, HttpStatus.OK);
     }
+    @GetMapping("/count")
+    public ResponseEntity<APIResponse<Long>> getCount() {
+        return new ResponseEntity<>(new APIResponse<>(200, "Total Count", medicineService.getTotalMedicineCount()), HttpStatus.OK);
+    }
+    @GetMapping("/expired/list")
+    public ResponseEntity<APIResponse<List<BatchDTO>>> getExpiredList() {
+        return new ResponseEntity<>(new APIResponse<>(200, "Expired Batches", medicineService.getExpiredBatchesList()), HttpStatus.OK);
+    }
 }
