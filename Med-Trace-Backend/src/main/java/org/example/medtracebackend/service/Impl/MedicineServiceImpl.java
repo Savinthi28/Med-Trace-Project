@@ -2,6 +2,7 @@ package org.example.medtracebackend.service.Impl;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
+import jakarta.transaction.Transactional;
 import org.example.medtracebackend.dto.BatchDTO;
 import org.example.medtracebackend.dto.MedicineDTO;
 import org.example.medtracebackend.entity.Batch;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional
 public class MedicineServiceImpl implements MedicineService {
 
     @Autowired
@@ -32,22 +34,36 @@ public class MedicineServiceImpl implements MedicineService {
     private ModelMapper modelMapper;
 
     @Override
-    public MedicineDTO saveMedicine(Medicine medicine) {
-        if (medicine == null) {
-            throw new NullPointerException("Medicine object cannot be null");
+    public MedicineDTO saveMedicine(MedicineDTO medicineDTO) {
+        if (medicineDTO == null) throw new NullPointerException("Medicine DTO cannot be null");
+        Medicine medicineEntity = modelMapper.map(medicineDTO, Medicine.class);
+        Medicine savedMedicine = medicineRepo.save(medicineEntity);
+
+        if (medicineDTO.getInitialBatch() != null) {
+            BatchDTO batchDTO = medicineDTO.getInitialBatch();
+            Batch batchEntity = modelMapper.map(batchDTO, Batch.class);
+
+            if (batchEntity.getQrCodeData() == null) {
+                batchEntity.setQrCodeData(batchEntity.getBatchNumber());
+            }
+            if (batchEntity.getStatus() == null) {
+                batchEntity.setStatus("AVAILABLE");
+            }
+
+            batchEntity.setMedicine(savedMedicine);
+            batchRepo.save(batchEntity);
         }
-        return modelMapper.map(medicineRepo.save(medicine), MedicineDTO.class);
+        return modelMapper.map(savedMedicine, MedicineDTO.class);
     }
 
     @Override
-    public BatchDTO addBatchToMedicine(Long medicineId, Batch batch) {
-        if (batch == null) {
-            throw new NullPointerException("Batch object cannot be null");
-        }
+    public BatchDTO addBatchToMedicine(Long medicineId, BatchDTO batchDTO) {
         Medicine medicine = medicineRepo.findById(medicineId)
                 .orElseThrow(() -> new ResourceNotFoundException("Medicine not found"));
-        batch.setMedicine(medicine);
-        return modelMapper.map(batchRepo.save(batch), BatchDTO.class);
+
+        Batch batchEntity = modelMapper.map(batchDTO, Batch.class);
+        batchEntity.setMedicine(medicine);
+        return modelMapper.map(batchRepo.save(batchEntity), BatchDTO.class);
     }
 
     @Override
@@ -57,12 +73,19 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public BatchDTO verifyByQrCode(String qrData) {
-        if (qrData == null) {
-            throw new NullPointerException("QR Data cannot be null");
-        }
         Batch batch = batchRepo.findByQrCodeData(qrData)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid QR Code!"));
-        return modelMapper.map(batch, BatchDTO.class);
+
+        BatchDTO dto = modelMapper.map(batch, BatchDTO.class);
+        dto.setMedicineName(batch.getMedicine().getName());
+
+        if (batch.getExpiryDate().isBefore(LocalDate.now())) {
+            dto.setStatus("EXPIRED");
+        } else {
+            dto.setStatus("VERIFIED");
+        }
+
+        return dto;
     }
 
     @Override
@@ -73,26 +96,30 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
-    public MedicineDTO updateMedicine(Long id, Medicine details) {
-        if (details == null) {
-            throw new NullPointerException("Update details cannot be null");
-        }
+    public MedicineDTO updateMedicine(Long id, MedicineDTO details) {
         Medicine existing = medicineRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Medicine not found: " + id));
+
         existing.setName(details.getName());
         existing.setManufacturer(details.getManufacturer());
         existing.setCategory(details.getCategory());
+
+        if (details.getInitialBatch() != null) {
+            if (existing.getBatches() != null && !existing.getBatches().isEmpty()) {
+                Batch lastBatch = existing.getBatches().get(existing.getBatches().size() - 1);
+                lastBatch.setBatchNumber(details.getInitialBatch().getBatchNumber());
+                lastBatch.setStockQuantity(details.getInitialBatch().getStockQuantity());
+                lastBatch.setExpiryDate(details.getInitialBatch().getExpiryDate());
+                batchRepo.save(lastBatch);
+            }
+        }
+
         return modelMapper.map(medicineRepo.save(existing), MedicineDTO.class);
     }
 
     @Override
     public void deleteMedicine(Long id) {
-        if (id == null) {
-            throw new NullPointerException("Id cannot be null");
-        }
-        if(!medicineRepo.existsById(id)){
-            throw new ResourceNotFoundException("Medicine not found for delete");
-        }
+        if(!medicineRepo.existsById(id)) throw new ResourceNotFoundException("Medicine not found");
         medicineRepo.deleteById(id);
     }
 
@@ -103,16 +130,13 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public void deleteBatch(Long id) {
-        if (id == null) {
-            throw new NullPointerException("Id cannot be null");
-        }
         batchRepo.deleteById(id);
     }
 
     @Override
     public byte[] generateExpiryReport() {
         List<Batch> expiredBatches = batchRepo.findAll().stream()
-                .filter(b -> "EXPIRED".equals(b.getStatus()))
+                .filter(b -> b.getExpiryDate() != null && b.getExpiryDate().isBefore(LocalDate.now()))
                 .toList();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -120,19 +144,17 @@ public class MedicineServiceImpl implements MedicineService {
             Document document = new Document();
             PdfWriter.getInstance(document, out);
             document.open();
-            Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-            document.add(new Paragraph("Med-Trace: Expired Medicines Report", font));
+            document.add(new Paragraph("Med-Trace: Expired Medicines Report", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18)));
             document.add(new Paragraph("Date: " + LocalDate.now()));
-            document.add(new Paragraph("--------------------------------------------"));
+            document.add(new Paragraph(" "));
+
             for (Batch b : expiredBatches) {
                 document.add(new Paragraph("Batch: " + b.getBatchNumber() +
                         " | Medicine: " + (b.getMedicine() != null ? b.getMedicine().getName() : "N/A") +
                         " | Expired On: " + b.getExpiryDate()));
             }
             document.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return out.toByteArray();
     }
 
@@ -144,7 +166,8 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public List<BatchDTO> getExpiredBatchesList() {
         List<Batch> expired = batchRepo.findAll().stream()
-                .filter(batch -> "EXPIRED" .equals(batch.getStatus())).toList();
+                .filter(b -> b.getExpiryDate() != null && b.getExpiryDate().isBefore(LocalDate.now()))
+                .toList();
         return modelMapper.map(expired, new TypeToken<List<BatchDTO>>() {}.getType());
     }
 }

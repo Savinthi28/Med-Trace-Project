@@ -13,4 +13,6 @@ public interface PharmacyService {
 
     void deletePharmacy(Long id);
     List<PharmacyDTO> getPharmaciesByLocation(String location);
+
+    Long getPharmacyCount();
 }

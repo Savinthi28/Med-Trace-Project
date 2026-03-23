@@ -19,7 +19,7 @@ public class Batch {
     @Column(unique = true)
     private String batchNumber;
 
-    @Column(unique = true)
+    @Column(length = 500)
     private String qrCodeData;
 
     private LocalDate expiryDate;

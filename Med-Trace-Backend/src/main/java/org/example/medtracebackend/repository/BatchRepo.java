@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface BatchRepo extends JpaRepository<Batch, Long> {
 
     Optional<Batch> findByQrCodeData(String qrCodeData);
+    Batch findByBatchNumber(String batchNumber);
 }

@@ -2,8 +2,6 @@ package org.example.medtracebackend.controller;
 
 import org.example.medtracebackend.dto.BatchDTO;
 import org.example.medtracebackend.dto.MedicineDTO;
-import org.example.medtracebackend.entity.Batch;
-import org.example.medtracebackend.entity.Medicine;
 import org.example.medtracebackend.service.MedicineService;
 import org.example.medtracebackend.util.APIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +22,14 @@ public class MedicineController {
     private MedicineService medicineService;
 
     @PostMapping
-    public ResponseEntity<APIResponse<MedicineDTO>> createMedicine(@RequestBody Medicine medicine){
-        MedicineDTO saved = medicineService.saveMedicine(medicine);
+    public ResponseEntity<APIResponse<MedicineDTO>> createMedicine(@RequestBody MedicineDTO medicineDTO){
+        MedicineDTO saved = medicineService.saveMedicine(medicineDTO);
         return new ResponseEntity<>(new APIResponse<>(201, "Medicine created successfully", saved), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/batches")
-    public ResponseEntity<APIResponse<BatchDTO>> addBatch(@PathVariable Long id, @RequestBody Batch batch){
-        BatchDTO savedBatch = medicineService.addBatchToMedicine(id, batch);
+    public ResponseEntity<APIResponse<BatchDTO>> addBatch(@PathVariable Long id, @RequestBody BatchDTO batchDTO){
+        BatchDTO savedBatch = medicineService.addBatchToMedicine(id, batchDTO);
         return new ResponseEntity<>(new APIResponse<>(201, "Batch added successfully", savedBatch), HttpStatus.CREATED);
     }
 
@@ -54,8 +52,8 @@ public class MedicineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<MedicineDTO>> updateMedicine(@PathVariable Long id, @RequestBody Medicine medicine) {
-        MedicineDTO updated = medicineService.updateMedicine(id, medicine);
+    public ResponseEntity<APIResponse<MedicineDTO>> updateMedicine(@PathVariable Long id, @RequestBody MedicineDTO medicineDTO) {
+        MedicineDTO updated = medicineService.updateMedicine(id, medicineDTO);
         return new ResponseEntity<>(new APIResponse<>(200, "Medicine updated successfully", updated), HttpStatus.OK);
     }
 
@@ -82,13 +80,15 @@ public class MedicineController {
         byte[] pdfContents = medicineService.generateExpiryReport();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("filename", "expiry-report.pdf");
+        headers.setContentDispositionFormData("attachment", "expiry-report.pdf");
         return new ResponseEntity<>(pdfContents, headers, HttpStatus.OK);
     }
+
     @GetMapping("/count")
     public ResponseEntity<APIResponse<Long>> getCount() {
         return new ResponseEntity<>(new APIResponse<>(200, "Total Count", medicineService.getTotalMedicineCount()), HttpStatus.OK);
     }
+
     @GetMapping("/expired/list")
     public ResponseEntity<APIResponse<List<BatchDTO>>> getExpiredList() {
         return new ResponseEntity<>(new APIResponse<>(200, "Expired Batches", medicineService.getExpiredBatchesList()), HttpStatus.OK);

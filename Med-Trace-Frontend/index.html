@@ -1,10 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Med-Trace | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-text: #cbd5e1;
+            --sidebar-hover: #1e293b;
+            --primary: #2ecc71;
+            --primary-dark: #27ae60;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --bg: #f8fafc;
+            --border: rgba(226,232,240,0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            height: 100vh;
+            position: fixed;
+            padding: 32px 24px;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            transition: width 0.3s ease;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin: 4px 0;
+            font-size: 0.98rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: var(--sidebar-hover);
+            color: white;
+        }
+
+        .sidebar nav a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar .logout {
+            margin-top: auto;
+            color: #f87171 !important;
+        }
+
+        .sidebar .logout:hover {
+            background: rgba(248,113,113,0.12) !important;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px 48px;
+            background: var(--bg);
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .header p {
+            color: var(--text-light);
+            margin-top: 6px;
+            font-size: 1.02rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08),
+            0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+        }
+
+        .stat-icon {
+            font-size: 2.1rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .stat-card h3 {
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .stat-card .number {
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .subtitle {
+            color: var(--text-light);
+            font-size: 0.92rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                padding: 32px 16px;
+            }
+            .sidebar-header span, .sidebar nav a span {
+                display: none;
+            }
+            .main-content {
+                margin-left: 80px;
+                padding: 32px 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 24px 20px;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 32px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
 
+<div class="sidebar">
+    <div class="sidebar-header">
+        <i class="fas fa-heartbeat" style="font-size: 2rem; color: var(--primary);"></i>
+        <span class="logo">Med-Trace</span>
+    </div>
+
+    <nav>
+        <a href="index.html" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="page/medicine.html"><i class="fas fa-pills"></i><span>Medicines</span></a>
+        <a href="page/supplier.html"><i class="fas fa-truck"></i><span>Suppliers</span></a>
+        <a href="page/pharmacy.html"><i class="fas fa-store"></i><span>Pharmacies</span></a>
+        <a href="login.html" class="logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="header">
+        <h1>Welcome back</h1>
+        <p>Here's an overview of your inventory and activity</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-prescription-bottle-alt"></i></div>
+            <h3>Total Medicines</h3>
+            <div class="number" id="med-count">0</div>
+            <p class="subtitle">in your database</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-truck-loading"></i></div>
+            <h3>Active Suppliers</h3>
+            <div class="number" id="sup-count" style="color: #3b82f6;">0</div>
+            <p class="subtitle">connected partners</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-store-alt"></i></div>
+            <h3>Registered Pharmacies</h3>
+            <div class="number" id="ph-count" style="color: #8b5cf6;">0</div>
+            <p class="subtitle">currently active</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3>Expiring Soon</h3>
+            <div class="number" id="expired-count" style="color: #f59e0b;">0</div>
+            <p class="subtitle">expired batches</p>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <h2 class="section-title">Quick Actions</h2>
+        <p style="color: var(--text-light); line-height: 1.6;">
+            Get started quickly: Add new medicines, register a new supplier, onboard a pharmacy,
+            or review low-stock alerts and expiring batches.
+        </p>
+    </div>
+</div>
+
+<script src="js/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const BASE_URL = "http://localhost:8085/api";
+
+        // 1. Medicine Count
+        $.get(`${BASE_URL}/medicines/count`, function(resp) {
+            $("#med-count").text(resp.data);
+        });
+
+        // 2. Supplier Count
+        $.get(`${BASE_URL}/suppliers/count`, function(resp) {
+            $("#sup-count").text(resp.data);
+        });
+
+        // 3. Pharmacy Count
+        $.get(`${BASE_URL}/pharmacies/count`, function(resp) {
+            $("#ph-count").text(resp.data);
+        });
+
+        // 4. Expired List Count 
+        $.get(`${BASE_URL}/medicines/expired/list`, function(resp) {
+            const count = resp.data ? resp.data.length : 0;
+            $("#expired-count").text(count);
+        });
+    });
+</script>
 </body>
 </html>

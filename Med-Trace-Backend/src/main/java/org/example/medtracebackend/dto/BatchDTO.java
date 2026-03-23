@@ -16,4 +16,5 @@ public class BatchDTO {
     private int stockQuantity;
     private String status;
     private Long medicineId;
+    private String medicineName;
 }

@@ -48,4 +48,8 @@ public class SupplierController {
         List<SupplierDTO> results = supplierService.searchSuppliers(name);
         return new ResponseEntity<>(new APIResponse<>(200, "Search results ", results), HttpStatus.OK);
     }
+    @GetMapping("/count")
+    public ResponseEntity<APIResponse<Long>> getSupplierCount() {
+        return new ResponseEntity<>(new APIResponse<>(200, "Success", supplierService.getSupplierCount()), HttpStatus.OK);
+    }
 }

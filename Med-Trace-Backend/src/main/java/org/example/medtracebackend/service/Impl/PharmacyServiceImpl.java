@@ -62,4 +62,9 @@ public class PharmacyServiceImpl implements PharmacyService {
         return modelMapper.map(pharmacyRepo.findByLocationContainingIgnoreCase(location),
                 new TypeToken<List<PharmacyDTO>>() {}.getType());
     }
+
+    @Override
+    public Long getPharmacyCount() {
+        return pharmacyRepo.count();
+    }
 }

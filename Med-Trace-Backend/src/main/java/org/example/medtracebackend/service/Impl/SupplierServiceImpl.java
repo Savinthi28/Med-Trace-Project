@@ -76,4 +76,9 @@ public class SupplierServiceImpl implements SupplierService {
         }
         return modelMapper.map(supplierRepo.findByNameContainingIgnoreCase(name), new TypeToken<List<SupplierDTO>>() {}.getType());
     }
+
+    @Override
+    public Long getSupplierCount() {
+        return supplierRepo.count();
+    }
 }

@@ -42,4 +42,8 @@ public class PharmacyController {
     public ResponseEntity<APIResponse<List<PharmacyDTO>>> searchByLocation(@RequestParam String location) {
         return new ResponseEntity<>(new APIResponse<>(200, "Search Results", pharmacyService.getPharmaciesByLocation(location)), HttpStatus.OK);
     }
+    @GetMapping("/count")
+    public ResponseEntity<APIResponse<Long>> getPharmacyCount() {
+        return new ResponseEntity<>(new APIResponse<>(200, "Success", pharmacyService.getPharmacyCount()), HttpStatus.OK);
+    }
 }
