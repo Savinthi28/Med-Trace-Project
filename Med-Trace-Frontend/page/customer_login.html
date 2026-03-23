@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Med-Trace | Customer Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #3b82f6; /* Customer ලට වෙනස් පාටක් (Blue) */
+      --primary-dark: #2563eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e2e8f0;
+      min-height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      padding: 20px; color: var(--text);
+    }
+
+    .login-container { width: 100%; max-width: 400px; }
+
+    .login-box {
+      background: var(--card); border-radius: 20px; padding: 40px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .logo { font-size: 2.2rem; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+    .subtitle { color: var(--text-light); font-size: 0.9rem; margin-bottom: 25px; }
+
+    .auth-type-indicator {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--primary);
+      padding: 5px 15px; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 600;
+      display: inline-block; margin-bottom: 20px;
+    }
+
+    .input-group { position: relative; margin-bottom: 15px; text-align: left; }
+    .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+
+    input {
+      width: 100%; padding: 12px 15px 12px 45px;
+      background: #f1f5f9; border: 1px solid #cbd5e1;
+      border-radius: 10px; color: var(--text); font-size: 1rem;
+    }
+
+    #register-fields { display: none; }
+
+    button {
+      width: 100%; padding: 14px; background: var(--primary);
+      color: white; border: none; border-radius: 10px;
+      font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s;
+    }
+    button:hover { background: var(--primary-dark); }
+
+    .toggle-link { display: block; margin-top: 20px; color: var(--primary); cursor: pointer; font-size: 0.9rem; }
+    .back-link { display: block; margin-top: 15px; color: var(--text-light); text-decoration: none; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="login-box">
+    <div class="logo"><i class="fas fa-hand-holding-medical"></i> Med-Trace</div>
+    <div class="subtitle">Customer Verification Portal</div>
+
+    <div class="auth-type-indicator" id="form-status">Customer Login</div>
+
+    <div class="input-group">
+      <i class="fas fa-user"></i>
+      <input type="text" id="username" placeholder="Username">
+    </div>
+
+    <div class="input-group">
+      <i class="fas fa-lock"></i>
+      <input type="password" id="password" placeholder="Password">
+    </div>
+
+    <div id="register-fields">
+      <div class="input-group">
+        <i class="fas fa-user-plus"></i>
+        <input type="text" id="fullname" placeholder="Full Name">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="email" placeholder="Email Address">
+      </div>
+    </div>
+
+    <button onclick="handleAuth()" id="auth-btn">Sign In</button>
+
+    <span class="toggle-link" onclick="toggleForm()" id="toggle-text">
+            New here? Create a Customer Account
+        </span>
+
+    <a href="../login.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Staff Login</a>
+  </div>
+</div>
+
+<script src="../js/jquery-3.6.4.min.js"></script>
+<script>
+  let isLogin = true;
+  const API_URL = "http://localhost:8085/api/users";
+
+  function toggleForm() {
+    isLogin = !isLogin;
+    $("#register-fields").slideToggle();
+    $("#form-status").text(isLogin ? "Customer Login" : "Customer Registration");
+    $("#auth-btn").text(isLogin ? "Sign In" : "Register Now");
+    $("#toggle-text").text(isLogin ? "New here? Create a Customer Account" : "Already have an account? Login");
+  }
+
+  function handleAuth() {
+    const username = $("#username").val();
+    const password = $("#password").val();
+    const fullName = $("#fullname").val();
+    const email = $("#email").val();
+
+    if (isLogin) {
+      // --- CUSTOMER LOGIN ---
+      $.post(`${API_URL}/login?username=${username}&password=${password}`, (resp) => {
+        alert("Welcome Customer!");
+        window.location.href = "consumer_scan.html";
+      }).fail(() => alert("Invalid Credentials!"));
+
+    } else {
+      // --- CUSTOMER REGISTRATION ---
+      const data = {
+        username: username,
+        password: password,
+        fullName: fullName,
+        email: email,
+        role: "CONSUMER"
+      };
+
+      $.ajax({
+        url: `${API_URL}/register`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: (resp) => {
+          alert("Account Created! You can login now.");
+          toggleForm();
+        },
+        error: () => alert("Username already exists!")
+      });
+    }
+  }
+</script>
+</body>
+</html>

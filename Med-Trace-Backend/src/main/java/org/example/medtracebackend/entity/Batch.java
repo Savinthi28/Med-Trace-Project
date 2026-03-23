@@ -26,7 +26,7 @@ public class Batch {
     private int stockQuantity;
     private String status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medicine_id")
     @JsonBackReference
     private Medicine medicine;

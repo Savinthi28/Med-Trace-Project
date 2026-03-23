@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Med-Trace | Login</title>
+    <title>Med-Trace | Secure Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <style>
         :root {
@@ -16,265 +16,127 @@
             --accent: #3b82f6;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: var(--text);
+            display: flex; justify-content: center; align-items: center;
+            padding: 20px; color: var(--text);
         }
 
-        .login-container {
-            position: relative;
-            width: 100%;
-            max-width: 420px;
-        }
+        .login-container { width: 100%; max-width: 400px; }
 
         .login-box {
-            background: var(--card);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 48px 40px 40px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6),
-            0 0 0 1px rgba(255,255,255,0.08) inset;
+            background: var(--card); border-radius: 20px; padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.06);
-            transition: transform 0.3s ease;
-        }
-
-        .login-box:hover {
-            transform: translateY(-4px);
-        }
-
-        .logo-area {
             text-align: center;
-            margin-bottom: 32px;
         }
 
-        .logo {
-            font-size: 2.8rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--primary), #10b981);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
+        .logo { font-size: 2.5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        .subtitle { color: var(--text-light); font-size: 0.85rem; margin-bottom: 25px; }
 
-        h2 {
-            font-size: 1.75rem;
+        .auth-type-indicator {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: white;
-        }
-
-        .subtitle {
-            color: var(--text-light);
-            font-size: 0.95rem;
-            margin-bottom: 32px;
-        }
-
-        .input-group {
-            position: relative;
+            display: inline-block;
             margin-bottom: 20px;
+            text-transform: uppercase;
         }
 
-        .input-group i {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-            font-size: 1.1rem;
-        }
+        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
 
         input {
-            width: 100%;
-            padding: 14px 16px 14px 48px;
-            background: rgba(30,41,59,0.6);
-            border: 1px solid rgba(148,163,184,0.2);
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(46,204,113,0.18);
-            background: rgba(30,41,59,0.8);
-        }
-
-        input::placeholder {
-            color: var(--text-light);
-            opacity: 0.7;
+            width: 100%; padding: 12px 15px 12px 45px;
+            background: rgba(30,41,59,0.6); border: 1px solid rgba(148,163,184,0.2);
+            border-radius: 10px; color: white; font-size: 1rem;
         }
 
         button {
-            width: 100%;
-            padding: 14px;
-            margin: 12px 0 16px;
-            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 10px 25px rgba(46,204,113,0.25);
+            width: 100%; padding: 14px; background: var(--primary);
+            color: white; border: none; border-radius: 10px;
+            font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s;
+        }
+        button:hover { background: var(--primary-dark); }
+
+        .customer-portal {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(46,204,113,0.35);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .toggle-link {
-            display: block;
-            text-align: center;
+        .customer-link {
             color: var(--accent);
-            font-size: 0.94rem;
-            cursor: pointer;
-            transition: color 0.2s;
             text-decoration: none;
-        }
-
-        .toggle-link:hover {
-            color: #60a5fa;
-            text-decoration: underline;
-        }
-
-        #register-fields {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, margin 0.4s ease;
-        }
-
-        #register-fields.active {
-            max-height: 200px;
-            margin: 20px 0;
-        }
-
-        @media (max-width: 480px) {
-            .login-box {
-                padding: 40px 24px 32px;
-            }
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
     </style>
 </head>
 <body>
 
 <div class="login-container">
-    <div class="login-box" id="auth-box">
-        <div class="logo-area">
-            <div class="logo">Med-Trace</div>
-            <div class="subtitle">Secure Healthcare Tracking</div>
-        </div>
+    <div class="login-box">
+        <div class="logo">Med-Trace</div>
+        <div class="subtitle">Drug Authenticity & Expiry Tracker</div>
 
-        <h2 id="form-title">Welcome Back</h2>
+        <div class="auth-type-indicator" id="role-tag">Staff Login</div>
 
         <div class="input-group">
             <i class="fas fa-user"></i>
-            <input type="text" id="username" placeholder="Username" autocomplete="username">
+            <input type="text" id="username" placeholder="Username">
         </div>
 
         <div class="input-group">
             <i class="fas fa-lock"></i>
-            <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+            <input type="password" id="password" placeholder="Password">
         </div>
 
-        <div id="register-fields">
-            <div class="input-group">
-                <i class="fas fa-user-plus"></i>
-                <input type="text" id="fullname" placeholder="Full Name" autocomplete="name">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-envelope"></i>
-                <input type="email" id="email" placeholder="Email" autocomplete="email">
-            </div>
+        <button onclick="handleLogin()">Sign In</button>
+
+        <div class="customer-portal">
+            <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 10px;">Are you a Customer?</p>
+            <a href="page/customer_login.html" class="customer-link">
+                <i class="fas fa-qrcode"></i> Go to Customer Verification
+            </a>
         </div>
-
-        <button onclick="handleAuth()" id="auth-btn">Sign In</button>
-
-        <span class="toggle-link" onclick="toggleForm()" id="toggle-text">
-      Don't have an account? Create one
-    </span>
     </div>
 </div>
 
-<script>
-    function toggleForm() {
-        const fields = document.getElementById('register-fields');
-        const title = document.getElementById('form-title');
-        const btn = document.getElementById('auth-btn');
-        const toggleText = document.getElementById('toggle-text');
-
-        fields.classList.toggle('active');
-
-        if (fields.classList.contains('active')) {
-            title.textContent = 'Create Account';
-            btn.textContent = 'Sign Up';
-            toggleText.textContent = 'Already have an account? Sign in';
-        } else {
-            title.textContent = 'Welcome Back';
-            btn.textContent = 'Sign In';
-            toggleText.textContent = "Don't have an account? Create one";
-        }
-    }
-
-    // Enter key support
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            handleAuth();
-        }
-    });
-</script>
-
 <script src="js/jquery-3.6.4.min.js"></script>
 <script>
-    let isLogin = true;
     const API_URL = "http://localhost:8085/api/users";
 
-    function toggleForm() {
-        isLogin = !isLogin;
-        $("#register-fields").toggle();
-        $("#form-title").text(isLogin ? "Login" : "Register");
-        $("#auth-btn").text(isLogin ? "Sign In" : "Register Now");
-        $("#toggle-text").text(isLogin ? "Don't have an account? Register" : "Already have an account? Login");
-    }
+    function handleLogin() {
+        const username = $("#username").val();
+        const password = $("#password").val();
 
-    function handleAuth() {
-        if(isLogin) {
-            const url = `${API_URL}/login?username=${$("#username").val()}&password=${$("#password").val()}`;
-            $.post(url, (resp) => {
-                alert("Login Successful!");
-                window.location.href = "index.html";
-            }).fail(() => alert("Invalid Credentials!"));
-        } else {
-            const data = { username: $("#username").val(),
-                password: $("#password").val(),
-                fullName: $("#fullname").val(),
-                email: $("#email").val(),
-                role: "ADMIN" };
-            $.ajax({
-                url: `${API_URL}/register`,
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data), success: () => { alert("Registered! Please Login."); toggleForm(); } });
+
+        if (!username || !password) {
+            alert("Please enter credentials!");
+            return;
         }
+
+        $.post(`${API_URL}/login?username=${username}&password=${password}`, (resp) => {
+            if (resp.data.role === "ADMIN") {
+                alert("Staff Login Successful!");
+                window.location.href = "index.html";
+            } else {
+                alert("Access Denied: This portal is for Staff only. Please use the Customer link.");
+            }
+        }).fail(() => alert("Invalid Username or Password!"));
+
     }
 </script>
 </body>
