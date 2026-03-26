@@ -3,6 +3,7 @@ package org.example.medtracebackend.controller;
 import org.example.medtracebackend.dto.BatchDTO;
 import org.example.medtracebackend.dto.MedicineDTO;
 import org.example.medtracebackend.service.MedicineService;
+import org.example.medtracebackend.service.ScanHistoryService;
 import org.example.medtracebackend.util.APIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,9 @@ public class MedicineController {
     @Autowired
     private MedicineService medicineService;
 
+    @Autowired
+    private ScanHistoryService scanHistoryService; // අලුතින් එක් කළ සර්විස් එක
+
     @PostMapping
     public ResponseEntity<APIResponse<MedicineDTO>> createMedicine(@RequestBody MedicineDTO medicineDTO){
         MedicineDTO saved = medicineService.saveMedicine(medicineDTO);
@@ -33,16 +37,25 @@ public class MedicineController {
         return new ResponseEntity<>(new APIResponse<>(201, "Batch added successfully", savedBatch), HttpStatus.CREATED);
     }
 
+    // --- වැදගත්ම කොටස: VERIFY WITH HISTORY ---
+    @GetMapping("/verify/{qrData}/{userId}")
+    public ResponseEntity<APIResponse<BatchDTO>> verify(@PathVariable String qrData, @PathVariable Long userId){
+        // 1. QR එකෙන් බෙහෙත හොයනවා
+        BatchDTO batch = medicineService.verifyByQrCode(qrData);
+
+        if (batch != null) {
+            // 2. ඉතිහාසයට (History) ස්වයංක්‍රීයව එක් කරනවා
+            scanHistoryService.saveScanRecord(userId, batch.getId(), "VERIFIED");
+            return new ResponseEntity<>(new APIResponse<>(200, "Verification successful", batch), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new APIResponse<>(404, "Invalid Medicine", null), HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping
     public ResponseEntity<APIResponse<List<MedicineDTO>>> getAll(){
         List<MedicineDTO> list = medicineService.getAllMedicine();
         return new ResponseEntity<>(new APIResponse<>(200, "All medicines fetched", list), HttpStatus.OK);
-    }
-
-    @GetMapping("/verify/{qrData}")
-    public ResponseEntity<APIResponse<BatchDTO>> verify(@PathVariable String qrData){
-        BatchDTO batch = medicineService.verifyByQrCode(qrData);
-        return new ResponseEntity<>(new APIResponse<>(200, "Verification successful", batch), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

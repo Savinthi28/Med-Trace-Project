@@ -122,14 +122,19 @@
   function handleAuth() {
     const username = $("#username").val();
     const password = $("#password").val();
-    const fullName = $("#fullname").val();
-    const email = $("#email").val();
 
     if (isLogin) {
       // --- CUSTOMER LOGIN ---
       $.post(`${API_URL}/login?username=${username}&password=${password}`, (resp) => {
-        alert("Welcome Customer!");
-        window.location.href = "consumer_scan.html";
+
+        if (resp && resp.data) {
+          localStorage.setItem("userId", resp.data.id);
+          alert("Welcome " + resp.data.fullName + "!");
+          window.location.href = "consumer_scan.html";
+        } else {
+          alert("Login success but no data received!");
+        }
+
       }).fail(() => alert("Invalid Credentials!"));
 
     } else {

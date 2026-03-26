@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Med-Trace | My Scan History</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root { --primary: #2ecc71; --dark: #0f172a; --bg: #f8fafc; --text: #1e293b; }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+
+    .nav { background: var(--dark); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .nav a { color: white; text-decoration: none; font-weight: 500; }
+
+    .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+    .card { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e2e8f0; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f1f5f9; padding: 15px; text-align: left; font-size: 0.9rem; color: #64748b; text-transform: uppercase; }
+    td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+
+    .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .verified { background: #dcfce7; color: #166534; }
+
+    .empty-state { padding: 50px; text-align: center; color: #94a3b8; }
+    .btn-scan { background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div class="nav">
+  <div style="font-size: 1.4rem; font-weight: 700; color: var(--primary);">Med-Trace</div>
+  <div>
+    <a href="consumer_scan.html" style="margin-right: 20px;"><i class="fas fa-qrcode"></i> Scan Now</a>
+    <a href="customer_login.html" style="color: #f87171;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header-box">
+    <h1>My Scan History</h1>
+    <p id="user-display" style="color: #64748b;"></p>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+      <tr>
+        <th>Date & Time</th>
+        <th>Medicine</th>
+        <th>Batch No</th>
+        <th>Manufacturer</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody id="historyTableBody">
+      </tbody>
+    </table>
+    <div id="no-data" class="empty-state" style="display: none;">
+      <i class="fas fa-history fa-3x" style="margin-bottom: 15px;"></i>
+      <p>No scan records found yet.</p>
+      <br>
+      <a href="consumer_scan.html" class="btn-scan">Start Scanning</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function() {
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      window.location.href = "customer_login.html";
+      return;
+    }
+
+    $.get(`http://localhost:8085/api/scans/user/${userId}`, function(resp) {
+      const history = resp.data;
+
+      if (!history || history.length === 0) {
+        $("#no-data").show();
+        $("table").hide();
+        return;
+      }
+
+      let rows = "";
+      history.forEach(item => {
+        const date = new Date(item.scanDate).toLocaleString();
+
+        rows += `
+                    <tr>
+                        <td>${date}</td>
+                        <td><strong>${item.medicineName}</strong></td>
+                        <td><code>${item.batchNo}</code></td>
+                        <td>${item.manufacturer}</td>
+                        <td><span class="status-badge verified"><i class="fas fa-check"></i> ${item.status}</span></td>
+                    </tr>
+                `;
+      });
+      $("#historyTableBody").html(rows);
+    }).fail(function() {
+      alert("Error loading history. Please try again.");
+    });
+  });
+</script>
+
+</body>
+</html>html>

@@ -80,7 +80,6 @@
     loadUsers();
   });
 
-  // 1. සියලුම Users ලා ගෙන්වා ගැනීම (GET)
   function loadUsers() {
     $.get(API_URL, (resp) => {
       const users = resp.data;
@@ -106,7 +105,6 @@
     });
   }
 
-  // 2. අලුත් User කෙනෙක් Save කිරීම (POST)
   function saveUser() {
     const data = {
       username: $("#username").val(),
@@ -135,7 +133,6 @@
     });
   }
 
-  // 3. User කෙනෙක් ඉවත් කිරීම (DELETE)
   function deleteUser(id) {
     if(confirm("Are you sure you want to delete this user?")) {
       $.ajax({

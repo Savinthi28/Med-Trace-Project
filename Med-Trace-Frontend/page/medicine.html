@@ -8,45 +8,125 @@
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
   <style>
-    :root { --sidebar-bg: #0f172a; --sidebar-text: #cbd5e1; --primary: #2ecc71; --primary-dark: #27ae60; --danger: #ef4444; --info: #3b82f6; --card-bg: #ffffff; --bg: #f8fafc; --text: #1e293b; --border: #e2e8f0; }
+    :root {
+      --sidebar-bg: #0f172a;
+      --sidebar-text: #cbd5e1;
+      --sidebar-hover: #1e293b;
+      --primary: #2ecc71;
+      --primary-dark: #27ae60;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --card-bg: #ffffff;
+      --bg: #f8fafc;
+      --text: #1e293b;
+      --border: #e2e8f0;
+    }
+
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; }
-    .sidebar { width: 260px; background: var(--sidebar-bg); color: var(--sidebar-text); height: 100vh; position: fixed; padding: 32px 24px; }
-    .logo { font-size: 1.9rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .sidebar nav a { display: flex; align-items: center; gap: 14px; color: var(--sidebar-text); text-decoration: none; padding: 14px 16px; border-radius: 10px; margin: 4px 0; }
-    .sidebar nav a.active { background: #1e293b; color: white; }
+
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; min-height: 100vh; }
+
+    /* --- Sidebar Fixes --- */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      height: 100vh;
+      position: fixed;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sidebar nav { flex: 1; }
+
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin: 4px 0;
+      transition: all 0.2s;
+    }
+
+    .sidebar nav a:hover, .sidebar nav a.active {
+      background: var(--sidebar-hover);
+      color: white;
+    }
+
+    .sidebar nav a i { width: 20px; text-align: center; }
+
+    .sidebar .logout {
+      margin-top: auto;
+      color: #f87171 !important;
+      padding: 12px 16px;
+    }
+
+    /* --- Main Content --- */
     .main-content { margin-left: 260px; flex: 1; padding: 40px 48px; }
+    .page-header { margin-bottom: 36px; }
+    .page-header h1 { font-size: 2.1rem; font-weight: 600; }
+    .page-header p { color: #64748b; margin-top: 6px; }
+
     .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 40px; }
     .card { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); border: 1px solid var(--border); }
+
     .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
-    input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #f9fafb; font-family: inherit; }
+    label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: #64748b; }
+    input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #f9fafb; }
+
     .button-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
     button { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; color: white; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-    button:hover { opacity: 0.8; }
+
     #saveBtn { background: var(--primary-dark); }
     #updateBtn { background: var(--info); }
     #deleteBtn { background: var(--danger); }
     #clearBtn { background: #64748b; }
     #reportBtn { background: #8b5cf6; width: 100%; margin-top: 15px; }
+
     #reader { border-radius: 12px; border: 2px solid var(--border); overflow: hidden; background: white; }
-    #scan-result { margin-top: 15px; padding: 15px; border-radius: 10px; text-align: left; display: none; }
-    .table-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+    #scan-result { margin-top: 15px; padding: 15px; border-radius: 10px; display: none; }
+
+    .table-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 15px 25px; text-align: left; border-bottom: 1px solid #f1f5f9; }
-    thead th { background: #f8fafc; font-size: 0.8rem; text-transform: uppercase; }
+    thead th { background: #f8fafc; font-size: 0.8rem; text-transform: uppercase; color: var(--text); }
   </style>
 </head>
 <body>
 
 <div class="sidebar">
-  <div class="sidebar-header"><span class="logo">Med-Trace</span></div>
+  <div class="sidebar-header">
+    <i class="fas fa-heartbeat" style="font-size: 2rem; color: var(--primary);"></i>
+    <span class="logo">Med-Trace</span>
+  </div>
+
   <nav>
     <a href="../index.html"><i class="fas fa-home"></i><span>Dashboard</span></a>
     <a href="medicine.html" class="active"><i class="fas fa-pills"></i><span>Medicines</span></a>
     <a href="supplier.html"><i class="fas fa-truck"></i><span>Suppliers</span></a>
     <a href="pharmacy.html"><i class="fas fa-store"></i><span>Pharmacies</span></a>
-    <a href="../login.html" style="margin-top:auto;color:#f87171;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+
+    <a href="../login.html" class="logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
   </nav>
 </div>
 
@@ -72,7 +152,6 @@
         <label>Manufacturer</label>
         <input id="med-manufacturer" type="text" placeholder="e.g. State Pharma">
       </div>
-
       <div class="form-group">
         <label>Category</label>
         <select id="med-category">
@@ -85,7 +164,6 @@
           <option value="Syrup">Syrup</option>
         </select>
       </div>
-
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div class="form-group">
           <label>Batch No *</label>
@@ -97,14 +175,13 @@
         </div>
       </div>
       <div class="form-group">
-        <label>QR Code Data (Raw String)</label>
-        <input id="batch-qr-data" type="text" placeholder="Scan QR to fill this">
+        <label>QR Code Data</label>
+        <input id="batch-qr-data" type="text" placeholder="Scan QR to fill">
       </div>
       <div class="form-group">
         <label>Expiry Date</label>
         <input id="batch-expiry" type="date">
       </div>
-
       <div class="button-group">
         <button id="saveBtn" onclick="saveMedicine()"><i class="fas fa-save"></i> Save</button>
         <button id="updateBtn" onclick="updateMedicine()"><i class="fas fa-sync"></i> Update</button>
@@ -159,8 +236,7 @@
       $("#med-id").val(med.id);
       $("#med-name").val(med.name);
       $("#med-manufacturer").val(med.manufacturer);
-      $("#med-category").val(med.category); // Dropdown එක පිරවෙනවා
-
+      $("#med-category").val(med.category);
       if (med.batches && med.batches.length > 0) {
         const b = med.batches[med.batches.length - 1];
         $("#batch-id").val(b.id);
@@ -175,114 +251,63 @@
   function saveMedicine() {
     const medName = $("#med-name").val();
     const batchNo = $("#batch-no").val();
-    const qrData = $("#batch-qr-data").val();
-    const qty = $("#batch-qty").val();
-    const expiryDate = $("#batch-expiry").val();
-
-    if (!medName) { alert("Please enter medicine name!"); return; }
-    if (!batchNo) { alert("Please enter a Batch Number manually!"); $("#batch-no").focus(); return; }
-    if (!qrData) { alert("Please scan a QR code first!"); return; }
-
+    if (!medName || !batchNo) { alert("Please fill mandatory fields!"); return; }
     const data = {
-      name: medName,
-      manufacturer: $("#med-manufacturer").val(),
-      category: $("#med-category").val(),
+      name: medName, manufacturer: $("#med-manufacturer").val(), category: $("#med-category").val(),
       initialBatch: {
-        batchNumber: batchNo,
-        qrCodeData: qrData,
-        stockQuantity: qty,
-        expiryDate: expiryDate,
-        status: new Date(expiryDate) < new Date() ? "EXPIRED" : "AVAILABLE"
+        batchNumber: batchNo, qrCodeData: $("#batch-qr-data").val(),
+        stockQuantity: $("#batch-qty").val(), expiryDate: $("#batch-expiry").val()
       }
     };
-
     $.ajax({
-      url: API_URL, method: 'POST', contentType: 'application/json',
-      data: JSON.stringify(data),
-      success: () => { alert("Saved Successfully!"); getAll(); clearFields(); },
-      error: () => alert("Save failed!")
+      url: API_URL, method: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+      success: () => { alert("Saved!"); getAll(); clearFields(); }
     });
   }
 
   function updateMedicine() {
     const id = $("#med-id").val();
-    if(!id) { alert("Select a medicine first!"); return; }
-
+    if(!id) return alert("Select medicine!");
     const data = {
-      name: $("#med-name").val(),
-      manufacturer: $("#med-manufacturer").val(),
-      category: $("#med-category").val(),
+      name: $("#med-name").val(), manufacturer: $("#med-manufacturer").val(), category: $("#med-category").val(),
       initialBatch: {
-        id: $("#batch-id").val(),
-        batchNumber: $("#batch-no").val(),
-        qrCodeData: $("#batch-qr-data").val(),
-        stockQuantity: $("#batch-qty").val(),
-        expiryDate: $("#batch-expiry").val()
+        id: $("#batch-id").val(), batchNumber: $("#batch-no").val(),
+        qrCodeData: $("#batch-qr-data").val(), stockQuantity: $("#batch-qty").val(), expiryDate: $("#batch-expiry").val()
       }
     };
-
     $.ajax({
-      url: `${API_URL}/${id}`,
-      method: 'PUT',
-      contentType: 'application/json',
-      data: JSON.stringify(data),
-      success: () => { alert("Updated Successfully!"); getAll(); clearFields(); },
-      error: () => alert("Update failed!")
+      url: `${API_URL}/${id}`, method: 'PUT', contentType: 'application/json', data: JSON.stringify(data),
+      success: () => { alert("Updated!"); getAll(); clearFields(); }
     });
   }
 
   function deleteMedicine() {
     const id = $("#med-id").val();
-    if(!id) return alert("Select medicine to delete!");
-    if(confirm("Are you sure? This will delete the medicine and all its batches.")) {
-      $.ajax({
-        url: `${API_URL}/${id}`, method: 'DELETE',
-        success: () => { alert("Deleted!"); getAll(); clearFields(); }
-      });
-    }
+    if(!id || !confirm("Are you sure?")) return;
+    $.ajax({ url: `${API_URL}/${id}`, method: 'DELETE', success: () => { alert("Deleted!"); getAll(); clearFields(); } });
   }
 
   function clearFields() {
-    $("#med-id, #batch-id, #med-name, #med-manufacturer, #batch-no, #batch-qty, #batch-expiry, #batch-qr-data").val("");
-    $("#med-category").val("General");
-    $("#scan-result").hide();
-    $("#res-body").html("");
-    if (html5QrcodeScanner) {
-      html5QrcodeScanner.clear().then(() => {
-        initScanner();
-      }).catch(error => {
-        console.error("Failed to clear scanner: ", error);
-      });
-    }
+    $("input").val(""); $("#med-category").val("General"); $("#scan-result").hide();
+    if (html5QrcodeScanner) { html5QrcodeScanner.clear().then(() => initScanner()); }
   }
 
   function initScanner() {
     html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-    html5QrcodeScanner.render(onScanSuccess);
-  }
-
-  function onScanSuccess(decodedText) {
-    $("#batch-qr-data").val(decodedText);
-
-    let cleanCode = decodedText.includes('/') ? decodedText.split('/').pop() : decodedText;
-    cleanCode = cleanCode.includes('.') ? cleanCode.split('.')[0] : cleanCode;
-
-    $.get(`${API_URL}/verify/${cleanCode}`, (resp) => {
-      const b = resp.data;
-      const isVerified = b.status !== "EXPIRED";
-      $("#scan-result").fadeIn().css("background", isVerified ? "#d1fae5" : "#fee2e2");
-      $("#res-title").text(`Status: ${isVerified ? 'VERIFIED' : 'EXPIRED'}`).css("color", isVerified ? "#065f46" : "#991b1b");
-      $("#res-body").html(`<b>Medicine:</b> ${b.medicineName}<br><b>Stock:</b> ${b.stockQuantity}`);
-
-      $("#batch-no").val(b.batchNumber);
-      $("#batch-id").val(b.id);
-      $("#batch-qty").val(b.stockQuantity);
-      $("#batch-expiry").val(b.expiryDate);
-    }).fail(() => {
-      $("#scan-result").fadeIn().css("background", "#fef3c7");
-      $("#res-title").text("Status: NEW BATCH").css("color", "#92400e");
-      $("#res-body").html("New batch detected. Enter Batch No manually.");
-      $("#batch-no").val("");
+    html5QrcodeScanner.render((text) => {
+      $("#batch-qr-data").val(text);
+      let clean = text.includes('/') ? text.split('/').pop() : text;
+      $.get(`${API_URL}/verify/${clean}`, (resp) => {
+        const b = resp.data;
+        $("#scan-result").fadeIn().css("background", "#d1fae5");
+        $("#res-title").text("Status: VERIFIED").css("color", "#065f46");
+        $("#res-body").html(`<b>Medicine:</b> ${b.medicineName}<br><b>Stock:</b> ${b.stockQuantity}`);
+        $("#batch-no").val(b.batchNumber); $("#batch-id").val(b.id);
+        $("#batch-qty").val(b.stockQuantity); $("#batch-expiry").val(b.expiryDate);
+      }).fail(() => {
+        $("#scan-result").fadeIn().css("background", "#fef3c7");
+        $("#res-title").text("Status: NEW BATCH").css("color", "#92400e");
+      });
     });
   }
 
